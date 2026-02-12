@@ -1,13 +1,14 @@
 const authPageData = {
   brand: {
-    name: "Focus & Habit",
-    icon: "bolt",
+    name: "Niyam",
+    iconText: "N",
+    logoSrc: "/niyam-logo.png",
   },
   hero: {
     title: "Master your time,",
     highlight: "build your future.",
     description:
-      "Join over 50,000 professionals using Focus & Habit Tracker to stay disciplined and achieve their most ambitious goals.",
+      "Join over 50,000 professionals using Niyam to stay disciplined and achieve their most ambitious goals.",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuD6ORQatEdGRb-53JziFd0fBrrPVuqxoCeho_RhriUbuvARJCJRtzG13p0Z2MedeylK_OcrOjYHmzryBfv61ZGCjdl-Iww8J3JTZulOsQGtIek8HgRnHXMSb6aFtooakrP7jAFkYbek_uTaXuhmnTc8Qq-hnCPwzaRrwPiU3MJwdcVOR1AbLJYgO3xkUtPaAZhZbkOqD6v39XjHUUMWT7LDnkVZftaNTb_uP_jJSvzB6Y13LWWFz5sQLvwQsB_edAmD_tPlkT2XS7WZ",
     avatars: [
@@ -20,9 +21,8 @@ const authPageData = {
   socialLogins: [
     {
       id: "google",
-      label: "Google",
-      icon:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuBmNQLCKyyKgg8EGMF5hsK03bze16SvB8EAZsdY10svqo5nqTu34MHLpdbZ2hrfm3pZCTuXI2rlFjAMZdsf__uXBKvEdf8anCZ-jAXguHvAZM_QAcxN-zbTHPVp-3iSGkCA9ZgK4LRzvDnbY8PMlnLAYJO4DZt6qQKVmiIFcKxj_ADuMB4P-vVR4L_Mvqu1A4ABxut2wEjzd5yDvdkucyDklAvVhVWp8cTPZ426elw8q141XPBfp4Gnt3bAdenUcI22CDcTXiIolR0C",
+      label: "Sign in with Google",
+      icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
     },
   ],
   legal: {

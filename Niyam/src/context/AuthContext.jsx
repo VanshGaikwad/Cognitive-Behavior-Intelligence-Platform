@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    sessionStorage.setItem("logoutRedirect", "1");
     await authService.logout();
     setUser(null);
   };

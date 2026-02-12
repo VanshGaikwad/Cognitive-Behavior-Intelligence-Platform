@@ -8,6 +8,7 @@ import {
   equalTo,
   limitToLast,
   get,
+  update,
   serverTimestamp,
 } from "firebase/database";
 import { rtdb } from "../firebaseConfig";
@@ -146,6 +147,74 @@ const endOfWeek = (start) => {
   return end;
 };
 
+const startOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1);
+
+const endOfMonth = (date) => {
+  const end = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  end.setMilliseconds(end.getMilliseconds() - 1);
+  return end;
+};
+
+const startOfYear = (date) => new Date(date.getFullYear(), 0, 1);
+
+const endOfYear = (date) => {
+  const end = new Date(date.getFullYear() + 1, 0, 1);
+  end.setMilliseconds(end.getMilliseconds() - 1);
+  return end;
+};
+
+const getRangeConfig = (rangeType = "weekly", anchorDate = new Date()) => {
+  if (rangeType === "monthly") {
+    const start = startOfMonth(anchorDate);
+    const end = endOfMonth(anchorDate);
+    return {
+      rangeStart: start,
+      rangeEnd: end,
+      labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
+      getBucketIndex: (date) => Math.min(4, Math.floor((date.getDate() - 1) / 7)),
+      rangeLabel: `${formatRelativeDateLabel(start)} - ${formatRelativeDateLabel(end)}`,
+      rangeName: "Monthly",
+    };
+  }
+
+  if (rangeType === "yearly") {
+    const start = startOfYear(anchorDate);
+    const end = endOfYear(anchorDate);
+    return {
+      rangeStart: start,
+      rangeEnd: end,
+      labels: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+      getBucketIndex: (date) => date.getMonth(),
+      rangeLabel: `${formatRelativeDateLabel(start)} - ${formatRelativeDateLabel(end)}`,
+      rangeName: "Yearly",
+    };
+  }
+
+  const start = startOfWeek(anchorDate);
+  const end = endOfWeek(start);
+  return {
+    rangeStart: start,
+    rangeEnd: end,
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    getBucketIndex: (date) => (date.getDay() + 6) % 7,
+    rangeLabel: `${formatRelativeDateLabel(start)} - ${formatRelativeDateLabel(end)}`,
+    rangeName: "Weekly",
+  };
+};
+
 const mapActivityDocument = (key, data) => {
   return {
     id: key,
@@ -188,6 +257,8 @@ const buildTimelineEntry = (activity) => {
     categoryClass: categoryStyle.badge,
     duration: formatDuration(activity.duration),
     startTime: formatTimeLabel(activity.createdAt),
+    createdAt: activity.createdAt.getTime(),
+    durationMinutes: activity.duration,
   };
 };
 
@@ -295,7 +366,8 @@ const buildAnalytics = (activities, weekStartDate) => {
 
   const chartBars = totals.map((minutes, index) => {
     const deepHeight = toHeight(minutes);
-    const lightHeight = getHeightClass(Math.max(10, Math.round(minutes * 0.3)), maxMinutes);
+    const lightMinutes = minutes ? Math.max(10, Math.round(minutes * 0.3)) : 0;
+    const lightHeight = getHeightClass(lightMinutes, maxMinutes);
     const muted = minutes === 0;
     const isPeak = minutes === Math.max(...totals) && minutes > 0;
     const tooltip = minutes ? `${(minutes / 60).toFixed(1)}h` : null;
@@ -305,6 +377,9 @@ const buildAnalytics = (activities, weekStartDate) => {
       day: days[index],
       deepClass: `${deepHeight} bg-blue-500`,
       lightClass: `${lightHeight} bg-blue-300`,
+      totalMinutes: minutes,
+      deepMinutes: minutes,
+      lightMinutes,
       muted,
       isPeak,
       tooltip,
@@ -380,6 +455,126 @@ const buildAnalytics = (activities, weekStartDate) => {
   };
 };
 
+const buildRangeAnalytics = (activities, rangeType, anchorDate) => {
+  const config = getRangeConfig(rangeType, anchorDate);
+  const { rangeStart, rangeEnd, labels, getBucketIndex, rangeLabel, rangeName } = config;
+  const totals = Array(labels.length).fill(0);
+  const categoryTotals = {};
+
+  activities.forEach((activity) => {
+    if (activity.createdAt < rangeStart || activity.createdAt > rangeEnd) return;
+    const index = getBucketIndex(activity.createdAt);
+    totals[index] += activity.duration;
+    categoryTotals[activity.category] =
+      (categoryTotals[activity.category] || 0) + activity.duration;
+  });
+
+  const maxMinutes = Math.max(...totals, 60);
+  const toHeight = (minutes) => getHeightClass(minutes, maxMinutes);
+  const peak = Math.max(...totals);
+
+  const chartBars = totals.map((minutes, index) => {
+    const deepHeight = toHeight(minutes);
+    const lightMinutes = minutes ? Math.max(10, Math.round(minutes * 0.3)) : 0;
+    const lightHeight = getHeightClass(lightMinutes, maxMinutes);
+    const muted = minutes === 0;
+    const isPeak = minutes === peak && minutes > 0;
+    const tooltip = minutes ? `${(minutes / 60).toFixed(1)}h` : null;
+
+    return {
+      id: `${labels[index]}-${index}`,
+      day: labels[index],
+      deepClass: `${deepHeight} bg-blue-500`,
+      lightClass: `${lightHeight} bg-blue-300`,
+      totalMinutes: minutes,
+      deepMinutes: minutes,
+      lightMinutes,
+      muted,
+      isPeak,
+      tooltip,
+    };
+  });
+
+  const totalRangeMinutes = totals.reduce((sum, value) => sum + value, 0);
+  const rangeDays = Math.max(
+    1,
+    Math.ceil((rangeEnd.getTime() - rangeStart.getTime() + 1) / (1000 * 60 * 60 * 24))
+  );
+  const dailyAverageMinutes = Math.round(totalRangeMinutes / rangeDays);
+  const deepSessions = activities.filter(
+    (activity) =>
+      activity.createdAt >= rangeStart &&
+      activity.createdAt <= rangeEnd &&
+      activity.duration >= 90
+  ).length;
+
+  const targetMinutes = Math.round((3000 / 7) * rangeDays);
+  const focusScore = targetMinutes
+    ? Math.min(100, Math.round((totalRangeMinutes / targetMinutes) * 100))
+    : 0;
+
+  const overview = [
+    {
+      id: "range-total",
+      label: `${rangeName} Total Focus`,
+      value: `${(totalRangeMinutes / 60).toFixed(1)}h`,
+      meta: "",
+      metaClass: "text-emerald-500",
+    },
+    {
+      id: "daily-average",
+      label: "Daily Average",
+      value: formatDuration(dailyAverageMinutes),
+      meta: "",
+      metaClass: "text-slate-400",
+    },
+    {
+      id: "deep-sessions",
+      label: "Deep Work Sessions",
+      value: deepSessions.toString(),
+      meta: "",
+      metaClass: "text-emerald-500",
+    },
+    {
+      id: "focus-score",
+      label: "Focus Score",
+      value: focusScore.toString(),
+      meta: "",
+      metaClass: "text-blue-500",
+      valueSuffix: "/100",
+    },
+  ];
+
+  const categoryEntries = Object.entries(categoryTotals).map(([category, minutes]) => {
+    const percent = totalRangeMinutes ? Math.round((minutes / totalRangeMinutes) * 100) : 0;
+    const colorMap = {
+      "Deep Work": "bg-blue-600",
+      Meetings: "bg-blue-400",
+      Learning: "bg-blue-200",
+      Admin: "bg-slate-300",
+    };
+
+    return {
+      id: category.toLowerCase().replace(/\s+/g, "-"),
+      label: category,
+      value: `${(minutes / 60).toFixed(1)}h (${percent}%)`,
+      percentClass: getPercentClass(percent),
+      colorClass: colorMap[category] || "bg-blue-200",
+      dotClass: colorMap[category] || "bg-blue-200",
+    };
+  });
+
+  return {
+    rangeLabel,
+    overview,
+    chart: {
+      yAxis: ["12h", "10h", "8h", "6h", "4h", "2h", "0h"],
+      bars: chartBars,
+    },
+    categories: categoryEntries,
+  };
+};
+
 export const addActivity = async ({ userId, activityName, duration, category }) => {
   try {
     if (!userId) {
@@ -407,6 +602,25 @@ export const deleteActivity = async (userId, activityId) => {
     await remove(activityRef);
   } catch (error) {
     console.error("Failed to delete activity", error);
+    throw error;
+  }
+};
+
+export const updateActivity = async (userId, activityId, updates) => {
+  try {
+    if (!userId || !activityId) {
+      throw new Error("Missing user ID or activity ID");
+    }
+
+    const activityRef = ref(rtdb, `activities/${userId}/${activityId}`);
+    const safeUpdates = {
+      ...updates,
+      updatedAt: Date.now(),
+    };
+
+    await update(activityRef, safeUpdates);
+  } catch (error) {
+    console.error("Failed to update activity", error);
     throw error;
   }
 };
@@ -528,6 +742,33 @@ export const getWeeklyAnalytics = async (userId, weekStartDate) => {
     return buildAnalytics(activities, start);
   } catch (error) {
     console.error("Failed to build weekly analytics", error);
+    throw error;
+  }
+};
+
+export const getRangeAnalytics = async (userId, rangeType, anchorDate) => {
+  try {
+    const { rangeStart, rangeEnd } = getRangeConfig(rangeType, anchorDate);
+    const activitiesRef = ref(rtdb, `activities/${userId}`);
+    const snapshot = await get(activitiesRef);
+
+    if (!snapshot.exists()) {
+      return buildRangeAnalytics([], rangeType, anchorDate);
+    }
+
+    const activities = [];
+    snapshot.forEach((child) => {
+      const activity = mapActivityDocument(child.key, child.val());
+      if (activity.createdAt >= rangeStart && activity.createdAt <= rangeEnd) {
+        activities.push(activity);
+      }
+    });
+
+    // Sort by createdAt ascending
+    activities.sort((a, b) => a.createdAt - b.createdAt);
+    return buildRangeAnalytics(activities, rangeType, anchorDate);
+  } catch (error) {
+    console.error("Failed to build range analytics", error);
     throw error;
   }
 };
@@ -680,6 +921,44 @@ export const subscribeWeeklyAnalytics = (userId, callback, weekStartDate) => {
     },
     (error) => {
       console.error("Realtime analytics failed", error);
+      callback(null);
+    }
+  );
+
+  return unsubscribe;
+};
+
+export const subscribeRangeAnalytics = (userId, rangeType, callback, anchorDate) => {
+  if (!userId) {
+    callback(null);
+    return () => {};
+  }
+
+  const { rangeStart, rangeEnd } = getRangeConfig(rangeType, anchorDate);
+  const activitiesRef = ref(rtdb, `activities/${userId}`);
+
+  const unsubscribe = onValue(
+    activitiesRef,
+    (snapshot) => {
+      if (!snapshot.exists()) {
+        callback(buildRangeAnalytics([], rangeType, anchorDate));
+        return;
+      }
+
+      const activities = [];
+      snapshot.forEach((child) => {
+        const activity = mapActivityDocument(child.key, child.val());
+        if (activity.createdAt >= rangeStart && activity.createdAt <= rangeEnd) {
+          activities.push(activity);
+        }
+      });
+
+      // Sort by createdAt ascending
+      activities.sort((a, b) => a.createdAt - b.createdAt);
+      callback(buildRangeAnalytics(activities, rangeType, anchorDate));
+    },
+    (error) => {
+      console.error("Realtime range analytics failed", error);
       callback(null);
     }
   );

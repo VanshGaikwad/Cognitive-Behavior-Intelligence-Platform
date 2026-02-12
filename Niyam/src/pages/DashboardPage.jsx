@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import ActivityRow from "../components/common/ActivityRow";
@@ -23,6 +24,7 @@ const DashboardPage = () => {
     category: "Deep Work",
   });
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -99,16 +101,36 @@ const DashboardPage = () => {
     }
   };
 
+  const handleLogout = () => {
+    sessionStorage.setItem("logoutRedirect", "1");
+    logout()
+      .catch((error) => {
+        console.error("Logout failed", error);
+      })
+      .finally(() => {
+        window.location.assign("/");
+      });
+  };
+
   return (
     <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900">
       <Sidebar
         variant="dashboard"
-        brand={{ name: "FocusFlow", icon: "bolt" }}
+        brand={{
+          name: "Niyam",
+          logoSrc: "/niyam-logo.png",
+          logoClass: "w-9 h-9 object-contain",
+          badgeClass: "bg-transparent",
+          badgeShapeClass: "rounded-none",
+          badgeSizeClass: "w-12 h-12",
+          textClass: "text-lg font-semibold tracking-tight",
+          iconText: "N",
+        }}
         items={navigation}
         footer={
           <button
             className="flex items-center px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all rounded-sm"
-            onClick={logout}
+            onClick={handleLogout}
           >
             <span className="material-symbols-outlined mr-3">logout</span>
             Logout
@@ -116,7 +138,7 @@ const DashboardPage = () => {
         }
       />
 
-      <main className="ml-64 min-h-screen">
+      <main className="ml-0 md:ml-64 min-h-screen pt-16 md:pt-0">
         <Header
           variant="dashboard"
           left={
@@ -143,7 +165,7 @@ const DashboardPage = () => {
           }
         />
 
-        <div className="p-10 max-w-7xl mx-auto space-y-6">
+        <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
           <section>
             <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">
               Daily Log Section

@@ -1,20 +1,43 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import StatCard from "../components/common/StatCard";
+import ThreeBarChart from "../components/common/ThreeBarChart";
 import { getPrimaryNavigation } from "../services/navigationService";
 import { getAnalyticsData } from "../services/analyticsService";
-import { subscribeWeeklyAnalytics } from "../services/activityService";
+import { subscribeRangeAnalytics } from "../services/activityService";
 import { useAuth } from "../context/AuthContext";
 
+const baseAnalytics = {
+  insight: {
+    title: "",
+    body: "",
+  },
+  efficiency: {
+    title: "",
+    value: "",
+  },
+  weekRange: "",
+  overview: [],
+  chart: {
+    yAxis: ["12h", "10h", "8h", "6h", "4h", "2h", "0h"],
+    bars: [],
+  },
+  categories: [],
+};
+
 const AnalyticsPage = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(baseAnalytics);
+  const [rangeType, setRangeType] = useState("weekly");
+  const [show3d, setShow3d] = useState(false);
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   useEffect(() => {
     const loadBase = async () => {
       const base = await getAnalyticsData();
-      setData(base);
+      setData((prev) => ({ ...prev, ...base }));
     };
 
     loadBase();
@@ -25,57 +48,58 @@ const AnalyticsPage = () => {
       return undefined;
     }
 
-    const unsubscribe = subscribeWeeklyAnalytics(user.id, (weekly) => {
-      if (!weekly) {
+    const unsubscribe = subscribeRangeAnalytics(user.id, rangeType, (rangeData) => {
+      if (!rangeData) {
         return;
       }
-      setData((prev) => ({ ...prev, ...weekly }));
+      setData((prev) => ({ ...(prev || baseAnalytics), ...rangeData }));
     });
 
     return () => {
       unsubscribe();
     };
-  }, [user]);
-
-  if (!data) {
-    return null;
-  }
+  }, [user, rangeType]);
 
   const navigation = getPrimaryNavigation("analytics");
 
+  const handleLogout = () => {
+    sessionStorage.setItem("logoutRedirect", "1");
+    logout()
+      .catch((error) => {
+        console.error("Logout failed", error);
+      })
+      .finally(() => {
+        window.location.assign("/");
+      });
+  };
+
   return (
-    <div className="flex h-screen overflow-hidden font-['Inter'] bg-[#f8fafc] text-slate-900">
+    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900">
       <Sidebar
-        variant="analytics"
-        brand={{ name: "FocusFlow", icon: "monitoring", iconSizeClass: "text-xl" }}
+        variant="dashboard"
+        brand={{
+          name: "Niyam",
+          logoSrc: "/niyam-logo.png",
+          logoClass: "w-9 h-9 object-contain",
+          badgeClass: "bg-transparent",
+          badgeShapeClass: "rounded-none",
+          badgeSizeClass: "w-12 h-12",
+          textClass: "text-lg font-semibold tracking-tight",
+          iconText: "N",
+        }}
         items={navigation}
         footer={
-          <>
-            <button
-              className="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors group"
-              onClick={logout}
-            >
-              <span className="material-symbols-outlined text-[22px]">logout</span>
-              <span className="text-sm font-medium">Logout</span>
-            </button>
-            <div className="p-3 bg-slate-50 rounded-xl flex items-center gap-3 border border-slate-100">
-              <img
-                alt="Alex Morgan"
-                className="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKaxMjxxg0WEYxvy7jEwzw0SXMuS61G52UerM4iLarFOqUbpikoO1yJDhOYnclpcjeHrdJb1TbqRmZ2-RzI5Q_z4t_g8K1Ri2TGvF6b4YQE5-AoYPL0MstFxxnHNz1QIAV6u0bRmDPQYH9g3I43lr3jp_mkje1SDMkyn2rA19kY4sx2Cc3zIvOn3ivAMMUi7EhismK3Cw1Al5US0kwflNZ-LGJP3MH7u50U3TlzqwAkBW76KQvMgyUYdWLqSXaM3zbeVAujoOouY8q"
-              />
-              <div className="overflow-hidden">
-                <p className="text-xs font-semibold truncate text-slate-900">Alex Morgan</p>
-                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">
-                  ID: 4920
-                </p>
-              </div>
-            </div>
-          </>
+          <button
+            className="flex items-center px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all rounded-sm"
+            onClick={handleLogout}
+          >
+            <span className="material-symbols-outlined mr-3">logout</span>
+            Logout
+          </button>
         }
       />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="ml-0 md:ml-64 min-h-screen pt-16 md:pt-0">
         <Header
           variant="analytics"
           left={
@@ -91,26 +115,50 @@ const AnalyticsPage = () => {
           right={
             <>
               <div className="flex bg-slate-100 p-1 rounded-lg">
-                <button className="px-4 py-1 text-[11px] font-semibold bg-white shadow-sm rounded-md">
+                <button
+                  className={`px-4 py-1 text-[11px] font-semibold rounded-md ${
+                    rangeType === "weekly"
+                      ? "bg-white shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                  onClick={() => setRangeType("weekly")}
+                  type="button"
+                >
                   Weekly
                 </button>
-                <button className="px-4 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-700">
+                <button
+                  className={`px-4 py-1 text-[11px] font-semibold rounded-md ${
+                    rangeType === "monthly"
+                      ? "bg-white shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                  onClick={() => setRangeType("monthly")}
+                  type="button"
+                >
                   Monthly
                 </button>
-                <button className="px-4 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-700">
+                <button
+                  className={`px-4 py-1 text-[11px] font-semibold rounded-md ${
+                    rangeType === "yearly"
+                      ? "bg-white shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                  onClick={() => setRangeType("yearly")}
+                  type="button"
+                >
                   Yearly
                 </button>
               </div>
               <div className="h-4 w-px bg-slate-200"></div>
-              <button className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#3b82f6] transition-colors uppercase tracking-wider">
+              <button className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#3b82f6] transition-colors uppercase tracking-wider" type="button">
                 <span className="material-symbols-outlined text-lg">calendar_today</span>
-                {data.weekRange}
+                {data.rangeLabel || data.weekRange}
               </button>
             </>
           }
         />
 
-        <div className="p-8 max-w-7xl mx-auto space-y-8">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {data.overview.map((card) => (
               <StatCard
@@ -147,54 +195,83 @@ const AnalyticsPage = () => {
                     Light Focus
                   </span>
                 </div>
-                <button className="flex items-center gap-1 text-[10px] font-bold text-[#3b82f6] bg-blue-50 px-2 py-1 rounded">
+                <button
+                  className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded transition-colors ${
+                    show3d
+                      ? "text-white bg-[#3b82f6]"
+                      : "text-[#3b82f6] bg-blue-50"
+                  }`}
+                  onClick={() => setShow3d((prev) => !prev)}
+                  type="button"
+                >
                   <span className="material-symbols-outlined text-sm">3d_rotation</span>
-                  3D VIEW
+                  {show3d ? "2D VIEW" : "3D VIEW"}
                 </button>
               </div>
             </div>
 
             <div className="relative bg-slate-50/50 px-12 py-16">
-              <div className="relative h-[400px] w-full flex items-end">
+              <div className="relative h-100 w-full flex items-end">
                 <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-slate-400 font-bold pointer-events-none translate-x-[-120%] pr-4 text-right">
                   {data.chart.yAxis.map((label) => (
                     <span key={label}>{label}</span>
                   ))}
                 </div>
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-[2px]">
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-0.5">
                   {data.chart.yAxis.map((label) => (
                     <div key={label} className="w-full h-px border-b border-slate-200"></div>
                   ))}
                 </div>
-                <div className="relative w-full h-full flex justify-around items-end z-10 px-4">
-                  {data.chart.bars.map((bar) => (
-                    <div key={bar.id} className="relative flex flex-col items-center w-full group">
-                      <div
-                        className={`flex flex-col-reverse w-12 gap-0.5 ${
-                          bar.isPeak ? "ring-2 ring-[#3b82f6]/20 rounded-t" : ""
-                        } ${bar.muted ? "opacity-40" : ""}`}
-                      >
-                        <div
-                          className={`w-full rounded-t-sm shadow-sm transition-all hover:brightness-110 ${bar.lightClass}`}
-                        ></div>
-                        <div
-                          className={`w-full rounded-t-sm shadow-md transition-all hover:brightness-110 ${bar.deepClass}`}
-                        ></div>
-                      </div>
+                <div className="relative w-full h-full z-10 px-4">
+                  {show3d ? (
+                    <ThreeBarChart bars={data.chart.bars} className="absolute inset-0" />
+                  ) : (
+                    <div className="relative w-full h-full flex justify-around items-end">
+                      {data.chart.bars.map((bar) => (
+                        <div key={bar.id} className="relative flex flex-col items-center w-full group">
+                          <div
+                            className={`flex flex-col-reverse w-12 gap-0.5 ${
+                              bar.isPeak ? "ring-2 ring-[#3b82f6]/20 rounded-t" : ""
+                            } ${bar.muted ? "opacity-40" : ""}`}
+                          >
+                            <div
+                              className={`w-full rounded-t-sm shadow-sm transition-all hover:brightness-110 ${bar.lightClass}`}
+                            ></div>
+                            <div
+                              className={`w-full rounded-t-sm shadow-md transition-all hover:brightness-110 ${bar.deepClass}`}
+                            ></div>
+                          </div>
+                          {bar.tooltip ? (
+                            <div className="absolute -top-10 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                              {bar.tooltip}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div
+                    className="absolute inset-x-0 -bottom-9 text-[11px] font-bold uppercase pointer-events-none"
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${Math.max(
+                        data.chart.bars.length,
+                        1
+                      )}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {data.chart.bars.map((bar) => (
                       <span
-                        className={`absolute -bottom-8 text-[11px] font-bold uppercase ${
+                        key={bar.id}
+                        title={bar.tooltip || ""}
+                        className={`text-center ${
                           bar.isPeak ? "text-slate-900" : "text-slate-400"
                         } ${bar.muted ? "text-slate-300" : ""}`}
                       >
                         {bar.day}
                       </span>
-                      {bar.tooltip ? (
-                        <div className="absolute -top-10 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          {bar.tooltip}
-                        </div>
-                      ) : null}
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

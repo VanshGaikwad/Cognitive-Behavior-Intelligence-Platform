@@ -40,6 +40,22 @@ const AuthPage = () => {
     return null;
   }
 
+  const brandMark = (
+    <div className="w-11 h-11 flex items-center justify-center">
+      {data.brand?.logoSrc ? (
+        <img
+          alt={data.brand.name}
+          className={data.brand.logoClass || "w-9 h-9 object-contain"}
+          src={data.brand.logoSrc}
+        />
+      ) : (
+        <span className="text-[#5b4ed8] text-2xl font-bold">
+          {data.brand?.iconText || "N"}
+        </span>
+      )}
+    </div>
+  );
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
@@ -93,7 +109,7 @@ const AuthPage = () => {
     <div className="font-['Inter'] bg-[#f6f7f8] text-slate-900 min-h-screen">
       <div className="flex min-h-screen">
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#137fec]/10">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_2px_2px,_#137fec_1px,_transparent_0)] [background-size:40px_40px]"></div>
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_2px_2px,#137fec_1px,transparent_0)] bg-size-[40px_40px]"></div>
           <div className="relative z-10 flex flex-col items-center justify-center w-full px-12 text-center">
             <div className="mb-8 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
               <img
@@ -124,22 +140,18 @@ const AuthPage = () => {
               </span>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#137fec]/10 to-transparent pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-full h-64 bg-linear-to-t from-[#137fec]/10 to-transparent pointer-events-none"></div>
         </div>
 
         <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 lg:px-24 bg-white">
           <div className="lg:hidden absolute top-8 left-8 flex items-center space-x-2">
-            <div className="w-10 h-10 bg-[#137fec] rounded-lg flex items-center justify-center">
-              <span className="material-icons text-white">{data.brand.icon}</span>
-            </div>
+            {brandMark}
             <span className="font-bold text-xl tracking-tight">{data.brand.name}</span>
           </div>
           <div className="max-w-md w-full mx-auto">
             <div className="mb-10 text-center lg:text-left">
               <div className="hidden lg:flex items-center space-x-2 mb-6">
-                <div className="w-8 h-8 bg-[#137fec] rounded-lg flex items-center justify-center">
-                  <span className="material-icons text-white text-sm">{data.brand.icon}</span>
-                </div>
+                <div className="scale-90 origin-left">{brandMark}</div>
                 <span className="font-bold text-lg tracking-tight">{data.brand.name}</span>
               </div>
               <h2 className="text-3xl font-bold text-slate-900">

@@ -1,7 +1,9 @@
 import {
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   onAuthStateChanged,
+  setPersistence,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -15,6 +17,10 @@ const defaultProfile = {
   avatar:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuAETCzEEEPSgRTQukA2sL2UFomfv5o7vJWJNNnt28fK35mkXdOiDC_u49ktBKoqrY2vhAlZ7N6XTkIhfDykbl5N7egAx_Vt_eVM9wz4oxd8USZmrpp8zbkkZCTwVz-cYWUiJRPGWOa7e1ymdF7j3m5betgew27GQGDD-oAQ16PW6FZa2HbyqjrBVbDBnCfOVMtnfPxQb_6NlESmHrdGwbqEyB8FQG5qLb50isu1Muy2sTcAi9wl_vPtCoZqqFEN1uQpSHYfD3H11k8T",
 };
+
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Auth persistence setup failed", error);
+});
 
 const buildUserProfile = async (user) => {
   if (!user) {

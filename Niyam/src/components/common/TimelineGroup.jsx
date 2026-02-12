@@ -1,11 +1,11 @@
 import React from "react";
 import TimelineActivity from "./TimelineActivity";
 
-const TimelineGroup = ({ group, isLast, onDeleteActivity }) => {
+const TimelineGroup = ({ group, isLast, onDeleteActivity, onEditActivity, categories }) => {
   return (
     <div className="timeline-group relative pb-10">
       <div
-        className={`absolute left-[11px] top-6 bottom-[-24px] w-[2px] bg-slate-200 ${
+        className={`absolute left-2.75 top-6 -bottom-6 w-0.5 bg-slate-200 ${
           isLast ? "hidden" : "block"
         }`}
       ></div>
@@ -28,12 +28,14 @@ const TimelineGroup = ({ group, isLast, onDeleteActivity }) => {
           </span>
         </div>
       </div>
-      <div className="space-y-3 ml-[38px]">
+      <div className="space-y-3 ml-9.5">
         {group.entries.map((entry) => (
           <TimelineActivity
             key={entry.id}
             activity={entry}
             onDelete={onDeleteActivity}
+            onEdit={onEditActivity}
+            categories={categories}
           />
         ))}
       </div>

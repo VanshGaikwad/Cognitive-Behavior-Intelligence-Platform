@@ -15,6 +15,11 @@ const ProtectedRoute = () => {
   }
 
   if (!user) {
+    const logoutRedirect = sessionStorage.getItem("logoutRedirect");
+    if (logoutRedirect) {
+      sessionStorage.removeItem("logoutRedirect");
+      return <Navigate to="/" replace />;
+    }
     return <Navigate to="/auth" replace state={{ from: location }} />;
   }
 

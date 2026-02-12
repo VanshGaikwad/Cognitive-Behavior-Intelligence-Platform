@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLandingData } from "../services/landingService";
+import { useAuth } from "../context/AuthContext";
 
 const LandingPage = () => {
   const [data, setData] = useState(null);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const loadLanding = async () => {
@@ -18,17 +20,28 @@ const LandingPage = () => {
     return null;
   }
 
+  const isLoggedIn = Boolean(user);
+  const getStartedHref = isLoggedIn ? "/dashboard" : "/auth?mode=signup";
+
   return (
     <div className="font-['Inter'] text-slate-900 bg-white">
-      <nav className="fixed top-0 z-[100] w-full bg-white/70 backdrop-blur-xl border-b border-slate-100">
+      <nav className="fixed top-0 z-100 w-full bg-white/70 backdrop-blur-xl border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center gap-12">
               <Link className="flex items-center gap-2.5 group" to="/">
-                <div className="w-9 h-9 bg-[#4F46E5] rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform">
-                  <span className="material-symbols-outlined text-white text-xl font-bold">
-                    {data.brand.icon}
-                  </span>
+                <div className="w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  {data.brand.logoSrc ? (
+                    <img
+                      alt={data.brand.name}
+                      className="w-8 h-8 object-contain"
+                      src={data.brand.logoSrc}
+                    />
+                  ) : (
+                    <span className="text-[#5b4ed8] text-2xl font-bold">
+                      {data.brand.iconText || "N"}
+                    </span>
+                  )}
                 </div>
                 <span className="text-xl font-extrabold tracking-tight text-slate-900">
                   {data.brand.name}
@@ -47,24 +60,26 @@ const LandingPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <Link
-                className="text-sm font-bold text-slate-600 hover:text-[#4F46E5] transition-colors"
-                to="/auth?mode=login"
-              >
-                Log in
-              </Link>
+              {!loading && !isLoggedIn ? (
+                <Link
+                  className="text-sm font-bold text-slate-600 hover:text-[#4F46E5] transition-colors"
+                  to="/auth?mode=login"
+                >
+                  Log in
+                </Link>
+              ) : null}
               <Link
                 className="bg-[#4F46E5] hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-md shadow-indigo-100 hover:shadow-lg active:scale-95"
-                to="/auth?mode=signup"
+                to={getStartedHref}
               >
-                Get Started
+                {isLoggedIn ? "Go to Dashboard" : "Get Started"}
               </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      <section className="relative pt-32 pb-20 lg:pt-52 lg:pb-40 overflow-hidden bg-[radial-gradient(circle_at_50%_-20%,_#EEF2FF_0%,_#FFFFFF_60%)]">
+      <section className="relative pt-32 pb-20 lg:pt-52 lg:pb-40 overflow-hidden bg-[radial-gradient(circle_at_50%_-20%,#EEF2FF_0%,#FFFFFF_60%)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-[#4F46E5] text-xs font-bold mb-8 tracking-wide uppercase">
             <span className="flex h-2 w-2 rounded-full bg-[#4F46E5] animate-pulse mr-2.5"></span>
@@ -73,7 +88,7 @@ const LandingPage = () => {
           <h1 className="text-5xl lg:text-[5.5rem] font-black tracking-tight text-slate-900 mb-8 leading-[1.05]">
             {data.hero.title}
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4F46E5] to-indigo-400">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-[#4F46E5] to-indigo-400">
               {data.hero.highlight}
             </span>
           </h1>
@@ -83,9 +98,9 @@ const LandingPage = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24">
             <Link
               className="w-full sm:w-auto px-10 py-5 bg-[#4F46E5] text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all text-lg shadow-2xl shadow-indigo-200 flex items-center justify-center group"
-              to="/auth?mode=signup"
+              to={getStartedHref}
             >
-              {data.hero.actions.primary}
+              {isLoggedIn ? "Go to Dashboard" : data.hero.actions.primary}
               <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">
                 arrow_forward
               </span>
@@ -98,16 +113,22 @@ const LandingPage = () => {
             </button>
           </div>
 
-          <div className="relative max-w-[1100px] mx-auto mt-20">
+          <div className="relative max-w-275 mx-auto mt-20">
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-full h-full bg-[#4F46E5]/10 blur-[120px] rounded-full -z-10"></div>
-            <div className="relative bg-white rounded-3xl shadow-[0_32px_120px_-20px_rgba(0,0,0,0.15)] border border-slate-200 overflow-hidden flex flex-row h-[640px]">
-              <aside className="w-72 hidden lg:flex border-r border-slate-100 bg-white flex flex-col p-5 space-y-6">
+            <div className="relative bg-white rounded-3xl shadow-[0_32px_120px_-20px_rgba(0,0,0,0.15)] border border-slate-200 overflow-hidden flex flex-row h-160">
+              <aside className="w-72 flex max-lg:hidden border-r border-slate-100 bg-white flex-col p-5 space-y-6">
                 <div className="flex items-center gap-2.5 px-3 mb-8">
-                  <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
-                    <span className="material-symbols-outlined text-white text-sm">
-                      bolt
+                  {data.brand.logoSrc ? (
+                    <img
+                      alt={data.brand.name}
+                      className="w-7 h-7 object-contain"
+                      src={data.brand.logoSrc}
+                    />
+                  ) : (
+                    <span className="text-[#5b4ed8] text-lg font-bold">
+                      {data.brand.iconText || "N"}
                     </span>
-                  </div>
+                  )}
                   <span className="font-bold text-slate-900 text-sm tracking-tight">
                     {data.mockup.sidebar.brand}
                   </span>
@@ -251,7 +272,7 @@ const LandingPage = () => {
             {data.features.map((feature) => (
               <div
                 key={feature.id}
-                className={`group bg-slate-50/50 p-10 rounded-[2rem] border border-slate-100 hover:bg-white hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ${feature.hoverClass}`}
+                className={`group bg-slate-50/50 p-10 rounded-4xl border border-slate-100 hover:bg-white hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ${feature.hoverClass}`}
               >
                 <div
                   className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform ${feature.iconClass}`}
@@ -308,11 +329,17 @@ const LandingPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 lg:gap-8 mb-24">
             <div className="col-span-2">
               <div className="flex items-center gap-2.5 mb-8">
-                <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white text-lg">
-                    bolt
+                {data.brand.logoSrc ? (
+                  <img
+                    alt={data.brand.name}
+                    className="w-8 h-8 object-contain"
+                    src={data.brand.logoSrc}
+                  />
+                ) : (
+                  <span className="text-[#5b4ed8] text-2xl font-bold">
+                    {data.brand.iconText || "N"}
                   </span>
-                </div>
+                )}
                 <span className="text-xl font-black tracking-tight text-slate-900">
                   {data.brand.name}
                 </span>

@@ -1,7 +1,8 @@
 const landingData = {
   brand: {
-    name: "FocusFlow",
-    icon: "bolt",
+    name: "Niyam",
+    iconText: "N",
+    logoSrc: "/niyam-logo.png",
   },
   navLinks: [
     { id: "features", label: "Features", href: "#features" },
@@ -9,7 +10,7 @@ const landingData = {
     { id: "about", label: "About", href: "#about" },
   ],
   hero: {
-    badge: "Version 2.0 Now Live",
+    badge: "Version 1.0 Now Live",
     title: "Master your routine,",
     highlight: "reclaim your focus.",
     description:
@@ -21,7 +22,7 @@ const landingData = {
   },
   mockup: {
     sidebar: {
-      brand: "FocusFlow",
+      brand: "Niyam",
       items: [
         { id: "dashboard", label: "Dashboard", icon: "grid_view", active: true },
         { id: "habits", label: "Habit Tracker", icon: "checklist" },
@@ -86,12 +87,12 @@ const landingData = {
     eyebrow: "The System",
     title: "Built for clarity and performance.",
     subtitle:
-      "Traditional apps are too complex. FocusFlow strips away the noise to help you execute on what matters.",
+      "Traditional apps are too complex. Niyam strips away the noise to help you execute on what matters.",
   },
   pricing: {
     title: "Your best work starts with a better routine.",
     description:
-      "Join over 15,000 creators, entrepreneurs, and high-performers using FocusFlow to optimize their days.",
+      "Join over 15,000 creators, entrepreneurs, and high-performers using Niyam to optimize their days.",
     primaryAction: "Get Started Free",
     secondaryAction: "View Enterprise Plans",
     footnote: "No credit card required - 14-day premium trial - Unlimited habits",
@@ -121,7 +122,7 @@ const landingData = {
         links: ["Privacy", "Terms", "Cookie Policy"],
       },
     ],
-    copyright: "(c) 2024 FocusFlow Inc. Precision tools for progress.",
+    copyright: "(c) 2024 Niyam Inc. Precision tools for progress.",
     status: "All systems operational",
   },
 };
