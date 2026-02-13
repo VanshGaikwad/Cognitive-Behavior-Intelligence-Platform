@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const DEFAULTS = {
-  deep: 0x3b82f6,
-  light: 0x93c5fd,
+  deep: 0x2563eb,
+  light: 0x60a5fa,
 };
 
 const createLabelSprite = (text, { fontSize = 36, color = "#1f2937" } = {}) => {
@@ -279,7 +279,7 @@ const ThreeBarChart = ({ bars = [], className = "", autoRotate = true }) => {
         const edges = new THREE.LineSegments(
           new THREE.EdgesGeometry(geometry),
           new THREE.LineBasicMaterial({
-            color: 0x1e3a8a,
+            color: 0x1e40af,
             transparent,
             opacity: opacity * 0.4,
           })
@@ -300,7 +300,7 @@ const ThreeBarChart = ({ bars = [], className = "", autoRotate = true }) => {
         const edges = new THREE.LineSegments(
           new THREE.EdgesGeometry(geometry),
           new THREE.LineBasicMaterial({
-            color: 0x3b82f6,
+            color: 0x1d4ed8,
             transparent,
             opacity: opacity * 0.35,
           })
@@ -312,14 +312,14 @@ const ThreeBarChart = ({ bars = [], className = "", autoRotate = true }) => {
       const valueText = bar.tooltip || "0h";
       const valueSprite = createLabelSprite(valueText, {
         fontSize: 32,
-        color: bar.isPeak ? "#0f172a" : "#64748b",
+        color: bar.isPeak ? "#0f172a" : bar.muted ? "#94a3b8" : "#334155",
       });
       valueSprite.position.set(x, totalHeight + 0.5, 0);
       group.add(valueSprite);
 
       const daySprite = createLabelSprite(bar.day || "", {
         fontSize: 28,
-        color: bar.isPeak ? "#0f172a" : "#94a3b8",
+        color: bar.isPeak ? "#0f172a" : bar.muted ? "#cbd5f5" : "#64748b",
       });
       daySprite.position.set(x, -0.6, 0);
       group.add(daySprite);
