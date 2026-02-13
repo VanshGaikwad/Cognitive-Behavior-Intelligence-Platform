@@ -150,6 +150,13 @@ const formatRelativeDateLabel = (date) => {
   return date.toLocaleDateString("en-US", options);
 };
 
+const formatDateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
 const startOfWeek = (date) => {
@@ -596,6 +603,107 @@ const buildRangeAnalytics = (activities, rangeType, anchorDate) => {
   };
 };
 
+const buildHeatmapData = (activities, year) => {
+  const today = startOfDay(new Date());
+  const targetYear = year || today.getFullYear();
+  const startDate = new Date(targetYear, 0, 1);
+  const endDate = new Date(targetYear, 11, 31);
+  const endDateDay = startOfDay(endDate);
+
+  const dayCounts = new Map();
+  activities.forEach((activity) => {
+    const day = startOfDay(activity.createdAt);
+    if (day < startDate || day > endDateDay) {
+      return;
+    }
+    const key = formatDateKey(day);
+    dayCounts.set(key, (dayCounts.get(key) || 0) + 1);
+  });
+
+  let totalSubmissions = 0;
+  let totalActiveDays = 0;
+  dayCounts.forEach((count) => {
+    totalSubmissions += count;
+    if (count > 0) {
+      totalActiveDays += 1;
+    }
+  });
+
+  const streakEnd = targetYear === today.getFullYear() ? today : endDateDay;
+
+  let currentStreak = 0;
+  for (let cursor = new Date(streakEnd); cursor >= startDate; ) {
+    const key = formatDateKey(cursor);
+    const count = dayCounts.get(key) || 0;
+    if (count === 0) {
+      break;
+    }
+    currentStreak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  let maxStreak = 0;
+  let streak = 0;
+  for (let cursor = new Date(startDate); cursor <= streakEnd; ) {
+    const key = formatDateKey(cursor);
+    const count = dayCounts.get(key) || 0;
+    if (count > 0) {
+      streak += 1;
+      maxStreak = Math.max(maxStreak, streak);
+    } else {
+      streak = 0;
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  const gridStart = startOfWeek(startDate);
+  const gridEnd = new Date(endDateDay);
+  const endDayIndex = (gridEnd.getDay() + 6) % 7;
+  gridEnd.setDate(gridEnd.getDate() + (6 - endDayIndex));
+
+  const days = [];
+  for (let cursor = new Date(gridStart); cursor <= gridEnd; ) {
+    const day = startOfDay(cursor);
+    const key = formatDateKey(day);
+    const inRange = day >= startDate && day <= endDateDay;
+    const count = inRange ? dayCounts.get(key) || 0 : 0;
+    const level = count === 0 ? 0 : count < 2 ? 1 : count < 4 ? 2 : count < 6 ? 3 : 4;
+
+    days.push({
+      date: new Date(day),
+      count,
+      level,
+      isPlaceholder: !inRange,
+    });
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  const weeks = [];
+  for (let index = 0; index < days.length; index += 7) {
+    weeks.push(days.slice(index, index + 7));
+  }
+
+  const monthLabels = weeks.map((week) => {
+    const labelDay = week.find(
+      (day) => !day.isPlaceholder && day.date.getDate() === 1
+    );
+    return labelDay
+      ? labelDay.date.toLocaleString("en-US", { month: "short" })
+      : "";
+  });
+
+  return {
+    year: targetYear,
+    totalSubmissions,
+    totalActiveDays,
+    currentStreak,
+    maxStreak,
+    weeks,
+    monthLabels,
+  };
+};
+
 export const addActivity = async ({ userId, activityName, duration, category }) => {
   try {
     if (!userId) {
@@ -980,6 +1088,57 @@ export const subscribeRangeAnalytics = (userId, rangeType, callback, anchorDate)
     },
     (error) => {
       console.error("Realtime range analytics failed", error);
+      callback(null);
+    }
+  );
+
+  return unsubscribe;
+};
+
+const getAvailableYears = (activities) => {
+  const years = new Set();
+  activities.forEach((activity) => {
+    years.add(activity.createdAt.getFullYear());
+  });
+  if (!years.size) {
+    years.add(new Date().getFullYear());
+  }
+  return Array.from(years).sort((a, b) => b - a);
+};
+
+export const subscribeUserHeatmap = (userId, callback, year) => {
+  if (!userId) {
+    callback(null);
+    return () => {};
+  }
+
+  const activitiesRef = ref(rtdb, `activities/${userId}`);
+
+  const unsubscribe = onValue(
+    activitiesRef,
+    (snapshot) => {
+      if (!snapshot.exists()) {
+        callback({
+          heatmap: buildHeatmapData([], year),
+          availableYears: [new Date().getFullYear()],
+        });
+        return;
+      }
+
+      const activities = [];
+      snapshot.forEach((child) => {
+        activities.push(mapActivityDocument(child.key, child.val()));
+      });
+
+      activities.sort((a, b) => a.createdAt - b.createdAt);
+      const availableYears = getAvailableYears(activities);
+      callback({
+        heatmap: buildHeatmapData(activities, year || availableYears[0]),
+        availableYears,
+      });
+    },
+    (error) => {
+      console.error("Realtime heatmap failed", error);
       callback(null);
     }
   );

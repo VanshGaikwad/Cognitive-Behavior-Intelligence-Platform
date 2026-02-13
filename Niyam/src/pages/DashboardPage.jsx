@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import ActivityRow from "../components/common/ActivityRow";
 import SummaryProgress from "../components/common/SummaryProgress";
+import UserHeatmap from "../components/common/UserHeatmap";
 import { getPrimaryNavigation } from "../services/navigationService";
 import { getDashboardData } from "../services/dashboardService";
 import {
@@ -11,6 +12,7 @@ import {
   deleteActivity,
   subscribeDashboardSummary,
   subscribeRecentActivities,
+  subscribeUserHeatmap,
 } from "../services/activityService";
 import { useAuth } from "../context/AuthContext";
 
@@ -18,12 +20,18 @@ const DashboardPage = () => {
   const [data, setData] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [heatmapData, setHeatmapData] = useState(null);
+  const [availableYears, setAvailableYears] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [formState, setFormState] = useState({
     activityName: "",
     duration: "",
     category: "Deep Work",
   });
   const [submitting, setSubmitting] = useState(false);
+  const heatmapRef = useRef(null);
+  const avatarRef = useRef(null);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -40,17 +48,67 @@ const DashboardPage = () => {
     if (!user?.id) {
       setRecentActivities([]);
       setSummary(null);
+      setHeatmapData(null);
+      setAvailableYears([]);
       return undefined;
     }
 
     const unsubscribeRecent = subscribeRecentActivities(user.id, 3, setRecentActivities);
     const unsubscribeSummary = subscribeDashboardSummary(user.id, setSummary);
+    const unsubscribeHeatmap = subscribeUserHeatmap(user.id, (payload) => {
+      if (!payload) {
+        setHeatmapData(null);
+        return;
+      }
+      setHeatmapData(payload.heatmap || null);
+      setAvailableYears(payload.availableYears || []);
+    }, selectedYear);
 
     return () => {
       unsubscribeRecent();
       unsubscribeSummary();
+      unsubscribeHeatmap();
     };
-  }, [user]);
+  }, [user, selectedYear]);
+
+  useEffect(() => {
+    if (!availableYears.length) {
+      return;
+    }
+    if (!availableYears.includes(selectedYear)) {
+      setSelectedYear(availableYears[0]);
+    }
+  }, [availableYears, selectedYear]);
+
+  useEffect(() => {
+    if (!showHeatmap) {
+      return undefined;
+    }
+
+    const handleClickOutside = (event) => {
+      if (
+        heatmapRef.current?.contains(event.target) ||
+        avatarRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+      setShowHeatmap(false);
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setShowHeatmap(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [showHeatmap]);
 
   if (!data) {
     return null;
@@ -70,16 +128,21 @@ const DashboardPage = () => {
       return;
     }
 
-    if (!formState.activityName.trim() || !formState.duration) {
+    if (!formState.activityName.trim()) {
       return;
     }
+
+    const durationValue = formState.duration
+      ? Number(formState.duration)
+      : 45;
+    const safeDuration = Number.isNaN(durationValue) || durationValue <= 0 ? 45 : durationValue;
 
     setSubmitting(true);
     try {
       await addActivity({
         userId: user.id,
         activityName: formState.activityName,
-        duration: Number(formState.duration),
+        duration: safeDuration,
         category: formState.category,
       });
       setFormState((prev) => ({ ...prev, activityName: "", duration: "" }));
@@ -148,6 +211,13 @@ const DashboardPage = () => {
           }
           right={
             <>
+              <div
+                className="flex items-center gap-2 rounded-full border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-2.5 py-1 text-[11px] font-semibold text-orange-700 shadow-sm dark:border-orange-500/30 dark:from-orange-500/10 dark:to-amber-500/10 dark:text-orange-200"
+                aria-label="Current streak"
+              >
+                <span aria-hidden="true">🔥</span>
+                <span>{heatmapData?.currentStreak ?? 0} days</span>
+              </div>
               <div className="text-right">
                 <p className="text-sm font-semibold text-slate-900 leading-none dark:text-slate-100">
                   {displayUser.name}
@@ -156,11 +226,41 @@ const DashboardPage = () => {
                   {displayUser.plan}
                 </p>
               </div>
-              <img
-                alt="User Avatar"
-                className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-800"
-                src={displayUser.avatar}
-              />
+              <div className="relative">
+                <button
+                  ref={avatarRef}
+                  type="button"
+                  aria-label="Toggle activity heatmap"
+                  aria-expanded={showHeatmap}
+                  className="w-8 h-8 rounded-full border border-slate-200 overflow-hidden dark:border-slate-800"
+                  onClick={() => setShowHeatmap((prev) => !prev)}
+                >
+                  <img
+                    alt="User Avatar"
+                    className="w-full h-full object-cover"
+                    src={displayUser.avatar}
+                  />
+                </button>
+                {showHeatmap ? (
+                  <div
+                    ref={heatmapRef}
+                    className="absolute right-0 mt-3 z-50 w-[min(92vw,720px)]"
+                  >
+                    {heatmapData ? (
+                      <UserHeatmap
+                        data={heatmapData}
+                        availableYears={availableYears}
+                        selectedYear={selectedYear}
+                        onYearChange={setSelectedYear}
+                      />
+                    ) : (
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 text-slate-100 shadow-xl px-5 py-6 text-sm">
+                        Loading heatmap...
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </>
           }
         />
@@ -232,7 +332,11 @@ const DashboardPage = () => {
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest dark:text-slate-100">
                     Recent Logs
                   </h3>
-                  <button className="text-[11px] text-[#4F46E5] font-bold uppercase tracking-wider hover:underline">
+                  <button
+                    className="text-[11px] text-[#4F46E5] font-bold uppercase tracking-wider hover:underline"
+                    type="button"
+                    onClick={() => navigate("/history")}
+                  >
                     View All History
                   </button>
                 </div>

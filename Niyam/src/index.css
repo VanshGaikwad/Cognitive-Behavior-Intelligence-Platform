@@ -9,3 +9,29 @@
 .dark {
 	color-scheme: dark;
 }
+
+.heatmap-scroll {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.heatmap-scroll::-webkit-scrollbar {
+	height: 8px;
+}
+
+.heatmap-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.heatmap-scroll::-webkit-scrollbar-thumb {
+	background-color: rgba(148, 163, 184, 0.35);
+	border-radius: 999px;
+}
+
+.dark .heatmap-scroll {
+	scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+
+.dark .heatmap-scroll::-webkit-scrollbar-thumb {
+	background-color: rgba(148, 163, 184, 0.25);
+}
