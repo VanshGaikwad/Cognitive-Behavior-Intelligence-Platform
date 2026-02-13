@@ -2,18 +2,20 @@ import React from "react";
 
 const ActivityRow = ({ activity, onDelete }) => {
   return (
-    <div className="px-6 py-4 flex items-center justify-between group hover:bg-slate-50/50 transition-colors">
+    <div className="px-6 py-4 flex items-center justify-between group hover:bg-slate-50/50 transition-colors dark:hover:bg-slate-900/60">
       <div className="flex items-center gap-4">
-        <div className="w-9 h-9 bg-slate-100 text-slate-600 rounded-sm flex items-center justify-center">
+        <div className="w-9 h-9 bg-slate-100 text-slate-600 rounded-sm flex items-center justify-center dark:bg-slate-900 dark:text-slate-300">
           <span className="material-symbols-outlined">{activity.icon}</span>
         </div>
         <div>
-          <h4 className="text-sm font-semibold text-slate-900">{activity.title}</h4>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {activity.title}
+          </h4>
           <div className="flex items-center gap-3 mt-0.5">
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-400 font-medium dark:text-slate-500">
               {activity.duration}
             </span>
-            <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
             <span
               className={`text-[10px] font-bold uppercase tracking-tight ${activity.categoryClass}`}
             >
@@ -23,7 +25,7 @@ const ActivityRow = ({ activity, onDelete }) => {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-[11px] text-slate-400 font-medium">
+        <span className="text-[11px] text-slate-400 font-medium dark:text-slate-500">
           {activity.timeLabel}
         </span>
         <button

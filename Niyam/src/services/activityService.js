@@ -54,13 +54,34 @@ const heightClasses = [
 ];
 
 const categoryStyles = {
-  "Deep Work": { className: "text-indigo-600", badge: "bg-blue-50 text-blue-800" },
-  Meetings: { className: "text-purple-600", badge: "bg-purple-50 text-purple-700" },
-  Learning: { className: "text-emerald-600", badge: "bg-emerald-50 text-emerald-700" },
-  Admin: { className: "text-slate-500", badge: "bg-slate-100 text-slate-600" },
-  Health: { className: "text-green-700", badge: "bg-green-50 text-green-700" },
-  Writing: { className: "text-purple-700", badge: "bg-purple-50 text-purple-700" },
-  Development: { className: "text-orange-700", badge: "bg-orange-50 text-orange-700" },
+  "Deep Work": {
+    className: "text-indigo-600 dark:text-indigo-300",
+    badge: "bg-blue-50 text-blue-800 dark:bg-blue-500/10 dark:text-blue-200",
+  },
+  Meetings: {
+    className: "text-purple-600 dark:text-purple-300",
+    badge: "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-200",
+  },
+  Learning: {
+    className: "text-emerald-600 dark:text-emerald-300",
+    badge: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200",
+  },
+  Admin: {
+    className: "text-slate-500 dark:text-slate-300",
+    badge: "bg-slate-100 text-slate-600 dark:bg-slate-900/60 dark:text-slate-300",
+  },
+  Health: {
+    className: "text-green-700 dark:text-green-300",
+    badge: "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-200",
+  },
+  Writing: {
+    className: "text-purple-700 dark:text-purple-300",
+    badge: "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-200",
+  },
+  Development: {
+    className: "text-orange-700 dark:text-orange-300",
+    badge: "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-200",
+  },
 };
 
 const categoryIcons = {
@@ -75,8 +96,8 @@ const categoryIcons = {
 
 const getCategoryStyle = (category) =>
   categoryStyles[category] || {
-    className: "text-slate-500",
-    badge: "bg-slate-100 text-slate-600",
+    className: "text-slate-500 dark:text-slate-300",
+    badge: "bg-slate-100 text-slate-600 dark:bg-slate-900/60 dark:text-slate-300",
   };
 
 const getCategoryIcon = (category) => categoryIcons[category] || "task";

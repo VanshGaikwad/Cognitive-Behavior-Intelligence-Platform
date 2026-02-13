@@ -113,7 +113,7 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900">
+    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Sidebar
         variant="dashboard"
         brand={{
@@ -142,23 +142,23 @@ const DashboardPage = () => {
         <Header
           variant="dashboard"
           left={
-            <h1 className="text-sm font-bold uppercase tracking-widest text-slate-400">
+            <h1 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
               Dashboard
             </h1>
           }
           right={
             <>
               <div className="text-right">
-                <p className="text-sm font-semibold text-slate-900 leading-none">
+                <p className="text-sm font-semibold text-slate-900 leading-none dark:text-slate-100">
                   {displayUser.name}
                 </p>
-                <p className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-wider">
+                <p className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-wider dark:text-slate-500">
                   {displayUser.plan}
                 </p>
               </div>
               <img
                 alt="User Avatar"
-                className="w-8 h-8 rounded-full object-cover border border-slate-200"
+                className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-800"
                 src={displayUser.avatar}
               />
             </>
@@ -167,17 +167,17 @@ const DashboardPage = () => {
 
         <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
           <section>
-            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">
+            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1 dark:text-slate-500">
               Daily Log Section
             </h2>
-            <div className="bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-sm p-4">
+            <div className="bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-sm p-4 dark:bg-slate-950 dark:border-slate-800">
               <div className="flex flex-col lg:flex-row items-end gap-4">
                 <div className="flex-1 w-full">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 dark:text-slate-500">
                     Activity Name
                   </label>
                   <input
-                    className="block w-full border-slate-200 bg-slate-50/50 text-sm focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all rounded-sm px-3 py-2"
+                    className="block w-full border-slate-200 bg-slate-50/50 text-sm focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all rounded-sm px-3 py-2 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                     placeholder={data.activityForm.placeholder}
                     type="text"
                     name="activityName"
@@ -186,11 +186,11 @@ const DashboardPage = () => {
                   />
                 </div>
                 <div className="w-full lg:w-32">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 dark:text-slate-500">
                     Duration (m)
                   </label>
                   <input
-                    className="block w-full border-slate-200 bg-slate-50/50 text-sm focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all rounded-sm px-3 py-2"
+                    className="block w-full border-slate-200 bg-slate-50/50 text-sm focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all rounded-sm px-3 py-2 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                     placeholder={data.activityForm.durationPlaceholder}
                     type="number"
                     name="duration"
@@ -199,11 +199,11 @@ const DashboardPage = () => {
                   />
                 </div>
                 <div className="w-full lg:w-48">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 dark:text-slate-500">
                     Category
                   </label>
                   <select
-                    className="block w-full border-slate-200 bg-slate-50/50 text-sm focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all rounded-sm px-3 py-2"
+                    className="block w-full border-slate-200 bg-slate-50/50 text-sm focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all rounded-sm px-3 py-2 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                     name="category"
                     value={formState.category}
                     onChange={handleChange}
@@ -227,16 +227,16 @@ const DashboardPage = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-8 space-y-6">
-              <section className="bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+              <section className="bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-sm overflow-hidden dark:bg-slate-950 dark:border-slate-800">
+                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white dark:bg-slate-950 dark:border-slate-800">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest dark:text-slate-100">
                     Recent Logs
                   </h3>
                   <button className="text-[11px] text-[#4F46E5] font-bold uppercase tracking-wider hover:underline">
                     View All History
                   </button>
                 </div>
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-slate-100 dark:divide-slate-800">
                   {recentActivities.map((activity) => (
                     <ActivityRow
                       key={activity.id}
@@ -248,18 +248,18 @@ const DashboardPage = () => {
               </section>
             </div>
             <div className="lg:col-span-4 space-y-6">
-              <section className="bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-sm p-6">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
+              <section className="bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-sm p-6 dark:bg-slate-950 dark:border-slate-800">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6 dark:text-slate-500">
                   Today Summary
                 </h3>
                 {summary ? (
                   <>
                     <div className="mb-8">
                       <div className="flex items-baseline gap-2">
-                        <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+                        <h2 className="text-4xl font-bold text-slate-900 tracking-tight dark:text-slate-100">
                           {summary.totalMinutes}
                         </h2>
-                        <span className="text-slate-400 font-medium text-sm">
+                        <span className="text-slate-400 font-medium text-sm dark:text-slate-500">
                           minutes total
                         </span>
                       </div>
@@ -270,7 +270,7 @@ const DashboardPage = () => {
                           </span>
                           {summary.delta}
                         </div>
-                        <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
+                        <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider dark:text-slate-500">
                           {summary.deltaLabel}
                         </span>
                       </div>
@@ -286,19 +286,19 @@ const DashboardPage = () => {
                         />
                       ))}
                     </div>
-                    <div className="mt-8 pt-6 border-t border-slate-100">
-                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-sm border border-slate-100">
+                    <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-sm border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm dark:bg-slate-950">
                             <span className="material-symbols-outlined text-[#4F46E5] text-base">
                               military_tech
                             </span>
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest dark:text-slate-500">
                               {summary.goal.title}
                             </p>
-                            <p className="text-xs font-bold text-slate-900">
+                            <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                               {summary.goal.subtitle}
                             </p>
                           </div>

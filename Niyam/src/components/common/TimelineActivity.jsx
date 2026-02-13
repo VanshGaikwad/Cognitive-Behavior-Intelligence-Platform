@@ -33,23 +33,25 @@ const TimelineActivity = ({ activity, onDelete, onEdit, categories }) => {
   };
 
   return (
-    <div className="group bg-white border border-slate-200 rounded-xl p-5 flex items-center transition-all hover:shadow-md hover:border-slate-300">
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-2">
+    <div className="group bg-white border border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4 transition-all hover:shadow-md hover:border-slate-300 dark:bg-slate-950 dark:border-slate-800">
+      <div className="flex-1 w-full">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           {isEditing ? (
             <input
-              className="text-sm font-semibold text-slate-900 border border-slate-200 rounded-md px-2 py-1 w-full max-w-64"
+              className="text-sm font-semibold text-slate-900 border border-slate-200 rounded-md px-2 py-1 w-full max-w-64 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
               value={draft.title}
               onChange={(event) =>
                 setDraft((prev) => ({ ...prev, title: event.target.value }))
               }
             />
           ) : (
-            <h4 className="text-sm font-semibold text-slate-900">{activity.title}</h4>
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              {activity.title}
+            </h4>
           )}
           {isEditing ? (
             <select
-              className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border border-slate-200"
+              className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border border-slate-200 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
               value={draft.category}
               onChange={(event) =>
                 setDraft((prev) => ({ ...prev, category: event.target.value }))
@@ -69,14 +71,14 @@ const TimelineActivity = ({ activity, onDelete, onEdit, categories }) => {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-6 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px] text-slate-400">
+            <span className="material-symbols-outlined text-[16px] text-slate-400 dark:text-slate-500">
               timer
             </span>
             {isEditing ? (
               <input
-                className="w-20 border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700"
+                className="w-20 border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                 type="number"
                 min="1"
                 value={draft.durationMinutes}
@@ -93,7 +95,7 @@ const TimelineActivity = ({ activity, onDelete, onEdit, categories }) => {
           </div>
           {!isEditing && (
             <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px] text-slate-400">
+              <span className="material-symbols-outlined text-[16px] text-slate-400 dark:text-slate-500">
                 schedule
               </span>
               <span>{activity.startTime}</span>
@@ -101,7 +103,7 @@ const TimelineActivity = ({ activity, onDelete, onEdit, categories }) => {
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 sm:justify-end">
         {isEditing ? (
           <>
             <button

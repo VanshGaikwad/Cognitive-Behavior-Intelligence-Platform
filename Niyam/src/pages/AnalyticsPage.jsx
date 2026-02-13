@@ -74,7 +74,7 @@ const AnalyticsPage = () => {
   };
 
   return (
-    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900">
+    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Sidebar
         variant="dashboard"
         brand={{
@@ -107,19 +107,19 @@ const AnalyticsPage = () => {
               <span className="material-symbols-outlined text-slate-400 text-xl">
                 analytics
               </span>
-              <h1 className="text-base font-semibold text-slate-800 uppercase tracking-tight">
+              <h1 className="text-base font-semibold text-slate-800 uppercase tracking-tight dark:text-slate-100">
                 Focus Analytics
               </h1>
             </>
           }
           right={
-            <>
-              <div className="flex bg-slate-100 p-1 rounded-lg">
+            <div className="flex w-full sm:w-auto flex-wrap items-center gap-3 justify-end">
+              <div className="flex flex-wrap bg-slate-100 p-1 rounded-lg dark:bg-slate-900">
                 <button
                   className={`px-4 py-1 text-[11px] font-semibold rounded-md ${
                     rangeType === "weekly"
-                      ? "bg-white shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-white shadow-sm dark:bg-slate-950"
+                      : "text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-100"
                   }`}
                   onClick={() => setRangeType("weekly")}
                   type="button"
@@ -129,8 +129,8 @@ const AnalyticsPage = () => {
                 <button
                   className={`px-4 py-1 text-[11px] font-semibold rounded-md ${
                     rangeType === "monthly"
-                      ? "bg-white shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-white shadow-sm dark:bg-slate-950"
+                      : "text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-100"
                   }`}
                   onClick={() => setRangeType("monthly")}
                   type="button"
@@ -140,8 +140,8 @@ const AnalyticsPage = () => {
                 <button
                   className={`px-4 py-1 text-[11px] font-semibold rounded-md ${
                     rangeType === "yearly"
-                      ? "bg-white shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-white shadow-sm dark:bg-slate-950"
+                      : "text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-100"
                   }`}
                   onClick={() => setRangeType("yearly")}
                   type="button"
@@ -149,12 +149,12 @@ const AnalyticsPage = () => {
                   Yearly
                 </button>
               </div>
-              <div className="h-4 w-px bg-slate-200"></div>
-              <button className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#3b82f6] transition-colors uppercase tracking-wider" type="button">
+              <div className="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+              <button className="flex w-full sm:w-auto items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#3b82f6] transition-colors uppercase tracking-wider dark:text-slate-300 dark:hover:text-[#93c5fd]" type="button">
                 <span className="material-symbols-outlined text-lg">calendar_today</span>
                 {data.rangeLabel || data.weekRange}
               </button>
-            </>
+            </div>
           }
         />
 
@@ -172,26 +172,26 @@ const AnalyticsPage = () => {
             ))}
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-md overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-md overflow-hidden dark:bg-slate-950 dark:border-slate-800">
+            <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 dark:border-slate-800">
               <div>
-                <h2 className="text-sm font-bold text-slate-800 tracking-tight">
+                <h2 className="text-sm font-bold text-slate-800 tracking-tight dark:text-slate-100">
                   Active Focus Distribution
                 </h2>
-                <p className="text-[11px] text-slate-400 mt-0.5 font-medium uppercase tracking-wide">
+                <p className="text-[11px] text-slate-400 mt-0.5 font-medium uppercase tracking-wide dark:text-slate-500">
                   3D Visualization Engine Output
                 </p>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded bg-blue-500 shadow-sm"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider dark:text-slate-400">
                     Deep Focus
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded bg-blue-300 shadow-sm"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider dark:text-slate-400">
                     Light Focus
                   </span>
                 </div>
@@ -199,7 +199,7 @@ const AnalyticsPage = () => {
                   className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded transition-colors ${
                     show3d
                       ? "text-white bg-[#3b82f6]"
-                      : "text-[#3b82f6] bg-blue-50"
+                      : "text-[#3b82f6] bg-blue-50 dark:text-[#93c5fd] dark:bg-slate-900"
                   }`}
                   onClick={() => setShow3d((prev) => !prev)}
                   type="button"
@@ -210,19 +210,19 @@ const AnalyticsPage = () => {
               </div>
             </div>
 
-            <div className="relative bg-slate-50/50 px-12 py-16">
-              <div className="relative h-100 w-full flex items-end">
-                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-slate-400 font-bold pointer-events-none translate-x-[-120%] pr-4 text-right">
+            <div className="relative bg-slate-50/50 px-4 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-16 dark:bg-slate-900/40">
+              <div className="relative h-72 sm:h-96 lg:h-100 w-full flex items-end overflow-x-auto">
+                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-slate-400 font-bold pointer-events-none translate-x-[-120%] pr-4 text-right dark:text-slate-500">
                   {data.chart.yAxis.map((label) => (
                     <span key={label}>{label}</span>
                   ))}
                 </div>
                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-0.5">
                   {data.chart.yAxis.map((label) => (
-                    <div key={label} className="w-full h-px border-b border-slate-200"></div>
+                    <div key={label} className="w-full h-px border-b border-slate-200 dark:border-slate-800"></div>
                   ))}
                 </div>
-                <div className="relative w-full h-full z-10 px-4">
+                <div className="relative w-full h-full z-10 px-4 min-w-[420px] sm:min-w-[520px]">
                   {show3d ? (
                     <ThreeBarChart bars={data.chart.bars} className="absolute inset-0" />
                   ) : (
@@ -251,7 +251,7 @@ const AnalyticsPage = () => {
                     </div>
                   )}
                   <div
-                    className="absolute inset-x-0 -bottom-9 text-[11px] font-bold uppercase pointer-events-none"
+                    className="absolute inset-x-0 -bottom-7 sm:-bottom-9 text-[10px] sm:text-[11px] font-bold uppercase pointer-events-none"
                     style={{
                       display: "grid",
                       gridTemplateColumns: `repeat(${Math.max(
@@ -265,8 +265,10 @@ const AnalyticsPage = () => {
                         key={bar.id}
                         title={bar.tooltip || ""}
                         className={`text-center ${
-                          bar.isPeak ? "text-slate-900" : "text-slate-400"
-                        } ${bar.muted ? "text-slate-300" : ""}`}
+                          bar.isPeak
+                            ? "text-slate-900 dark:text-slate-100"
+                            : "text-slate-400 dark:text-slate-500"
+                        } ${bar.muted ? "text-slate-300 dark:text-slate-600" : ""}`}
                       >
                         {bar.day}
                       </span>
@@ -278,8 +280,8 @@ const AnalyticsPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-2xl border border-slate-200/60 shadow-sm">
-              <h3 className="text-sm font-bold text-slate-800 mb-8 flex items-center gap-2">
+            <div className="bg-white p-8 rounded-2xl border border-slate-200/60 shadow-sm dark:bg-slate-950 dark:border-slate-800">
+              <h3 className="text-sm font-bold text-slate-800 mb-8 flex items-center gap-2 dark:text-slate-100">
                 <span className="material-symbols-outlined text-blue-500 text-lg">
                   pie_chart
                 </span>
@@ -288,14 +290,14 @@ const AnalyticsPage = () => {
               <div className="space-y-6">
                 {data.categories.map((category) => (
                   <div key={category.id}>
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">
+                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 dark:text-slate-500">
                       <span className="flex items-center gap-2">
                         <span className={`w-2 h-2 rounded-full ${category.dotClass}`}></span>
                         {category.label}
                       </span>
-                      <span className="text-slate-900">{category.value}</span>
+                      <span className="text-slate-900 dark:text-slate-100">{category.value}</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden dark:bg-slate-800">
                       <div className={`h-full rounded-full ${category.colorClass} ${category.percentClass}`}></div>
                     </div>
                   </div>
@@ -319,16 +321,16 @@ const AnalyticsPage = () => {
                   insights
                 </span>
               </div>
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between dark:bg-slate-950 dark:border-slate-800">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                  <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 dark:bg-emerald-500/10">
                     <span className="material-symbols-outlined">trending_up</span>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest dark:text-slate-500">
                       {data.efficiency.title}
                     </p>
-                    <p className="text-sm font-bold text-slate-800">{data.efficiency.value}</p>
+                    <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{data.efficiency.value}</p>
                   </div>
                 </div>
                 <button className="text-[11px] font-bold text-[#3b82f6] hover:underline">
@@ -339,7 +341,7 @@ const AnalyticsPage = () => {
           </div>
         </div>
 
-        <footer className="p-8 border-t border-slate-200 mt-8 flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
+        <footer className="p-6 sm:p-8 border-t border-slate-200 mt-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] dark:border-slate-800 dark:text-slate-500">
           <span>ENGINE STATUS: NOMINAL</span>
           <span>DATA REFRESHED: 12:45:02 UTC</span>
           <div className="flex gap-4">

@@ -236,7 +236,7 @@ const HistoryPage = () => {
   };
 
   return (
-    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900">
+    <div className="bg-[#F1F5F9] min-h-screen font-['Inter'] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Sidebar
         variant="dashboard"
         brand={{
@@ -266,10 +266,10 @@ const HistoryPage = () => {
           variant="history"
           left={<h1 className="text-sm font-semibold text-slate-500">{header.navTitle}</h1>}
           right={
-            <>
+            <div className="flex w-full sm:w-auto items-center gap-3 flex-wrap justify-end">
               <div className="relative">
                 <button
-                  className="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+                  className="w-9 h-9 flex items-center justify-center rounded border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900"
                   onClick={() => {
                     setShowNotifications((prev) => !prev);
                     setShowExportMenu(false);
@@ -279,31 +279,31 @@ const HistoryPage = () => {
                   <span className="material-symbols-outlined text-[18px]">notifications</span>
                 </button>
                 {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 shadow-lg rounded-xl p-4 z-20">
+                  <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-slate-200 shadow-lg rounded-xl p-4 z-20 dark:bg-slate-950 dark:border-slate-800">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs font-semibold text-slate-600">Recent activity</p>
-                      <span className="text-[10px] text-slate-400">
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">Recent activity</p>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">
                         {latestNotifications.length} items
                       </span>
                     </div>
                     {latestNotifications.length ? (
                       <div className="space-y-2">
                         {latestNotifications.map((item) => (
-                          <div key={item.id} className="text-xs text-slate-600">
-                            <span className="font-semibold text-slate-800">{item.title}</span>
-                            <span className="text-slate-400"> · {item.category}</span>
+                          <div key={item.id} className="text-xs text-slate-600 dark:text-slate-300">
+                            <span className="font-semibold text-slate-800 dark:text-slate-100">{item.title}</span>
+                            <span className="text-slate-400 dark:text-slate-500"> · {item.category}</span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400">No history yet.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">No history yet.</p>
                     )}
                   </div>
                 )}
               </div>
               <div className="relative">
                 <button
-                  className="flex items-center gap-2 bg-[#137fec] text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm"
+                  className="flex w-full sm:w-auto items-center gap-2 bg-[#137fec] text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm"
                   onClick={() => {
                     setShowExportMenu((prev) => !prev);
                     setShowNotifications(false);
@@ -314,16 +314,16 @@ const HistoryPage = () => {
                   {header.exportLabel}
                 </button>
                 {showExportMenu && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border border-slate-200 shadow-lg rounded-xl p-2 z-20">
+                  <div className="absolute right-0 mt-2 w-40 sm:w-44 bg-white border border-slate-200 shadow-lg rounded-xl p-2 z-20 dark:bg-slate-950 dark:border-slate-800">
                     <button
-                      className="w-full text-left px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg"
+                      className="w-full text-left px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg dark:text-slate-300 dark:hover:bg-slate-900"
                       onClick={handleExportCsv}
                       type="button"
                     >
                       Export as CSV
                     </button>
                     <button
-                      className="w-full text-left px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg"
+                      className="w-full text-left px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg dark:text-slate-300 dark:hover:bg-slate-900"
                       onClick={handleExportExcel}
                       type="button"
                     >
@@ -332,27 +332,27 @@ const HistoryPage = () => {
                   </div>
                 )}
               </div>
-            </>
+            </div>
           }
         />
 
         <div className="p-4 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto flex-1">
-          <div className="mb-8 flex items-end justify-between">
+          <div className="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight dark:text-slate-100">
                 {header.title}
               </h2>
-              <p className="text-sm text-slate-500 mt-1">{header.subtitle}</p>
+              <p className="text-sm text-slate-500 mt-1 dark:text-slate-400">{header.subtitle}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="inline-flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm h-10">
+            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+              <div className="inline-flex flex-wrap items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm h-auto dark:bg-slate-950 dark:border-slate-800">
                 {rangeOptions.map((tab) => (
                   <button
                     key={tab.value}
                     className={`px-3 py-1 text-xs font-semibold rounded-md ${
                       selectedRange === tab.value
-                        ? "bg-[#eff6ff] text-[#137fec]"
-                        : "text-slate-500 hover:text-slate-800"
+                        ? "bg-[#eff6ff] text-[#137fec] dark:bg-slate-900 dark:text-[#93c5fd]"
+                        : "text-slate-500 hover:text-slate-800 dark:text-slate-300 dark:hover:text-slate-100"
                     }`}
                     onClick={() => {
                       setSelectedRange(tab.value);
@@ -366,31 +366,31 @@ const HistoryPage = () => {
               </div>
               <div className="relative">
                 <button
-                  className="h-10 px-3 flex items-center gap-2 border border-slate-200 bg-white rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  className="h-10 px-3 flex w-full sm:w-auto items-center gap-2 border border-slate-200 bg-white rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors min-w-0 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900"
                   onClick={() => setShowCustomRange((prev) => !prev)}
                   type="button"
                 >
                 <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                {customLabel}
+                <span className="truncate">{customLabel}</span>
                 </button>
                 {showCustomRange && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 shadow-lg rounded-xl p-4 z-20">
+                  <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 shadow-lg rounded-xl p-4 z-20 dark:bg-slate-950 dark:border-slate-800">
                     <div className="space-y-3">
-                      <label className="block text-xs font-semibold text-slate-500">
+                      <label className="block text-xs font-semibold text-slate-500 dark:text-slate-300">
                         Start date
                       </label>
                       <input
                         type="date"
-                        className="w-full border border-slate-200 rounded-md px-2 py-1 text-xs"
+                        className="w-full border border-slate-200 rounded-md px-2 py-1 text-xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
                         value={customStart}
                         onChange={(event) => setCustomStart(event.target.value)}
                       />
-                      <label className="block text-xs font-semibold text-slate-500">
+                      <label className="block text-xs font-semibold text-slate-500 dark:text-slate-300">
                         End date
                       </label>
                       <input
                         type="date"
-                        className="w-full border border-slate-200 rounded-md px-2 py-1 text-xs"
+                        className="w-full border border-slate-200 rounded-md px-2 py-1 text-xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
                         value={customEnd}
                         onChange={(event) => setCustomEnd(event.target.value)}
                       />
@@ -440,9 +440,9 @@ const HistoryPage = () => {
             ))}
           </div>
 
-          <div className="mt-12 py-8 border-t border-slate-200 flex flex-col items-center gap-4">
+          <div className="mt-12 py-8 border-t border-slate-200 flex flex-col items-center gap-4 dark:border-slate-800">
             <button
-              className="px-6 py-2.5 rounded-full border border-slate-200 text-xs font-bold text-slate-600 hover:text-[#137fec] hover:border-[#137fec] transition-all flex items-center gap-2 bg-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 rounded-full border border-slate-200 text-xs font-bold text-slate-600 hover:text-[#137fec] hover:border-[#137fec] transition-all flex items-center gap-2 bg-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-950 dark:border-slate-800 dark:text-slate-300 dark:hover:text-[#93c5fd]"
               onClick={() => setVisibleCount((prev) => prev + 6)}
               disabled={!canLoadMore}
               type="button"
@@ -450,7 +450,7 @@ const HistoryPage = () => {
               <span className="material-symbols-outlined text-[18px]">history</span>
               {footer.buttonLabel}
             </button>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
               {totalEntries
                 ? `Showing ${visibleEntries} of ${totalEntries} entries`
                 : footer.helperText}

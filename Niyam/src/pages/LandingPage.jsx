@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLandingData } from "../services/landingService";
 import { useAuth } from "../context/AuthContext";
 
 const LandingPage = () => {
   const [data, setData] = useState(null);
+  const [showTour, setShowTour] = useState(false);
+  const tourVideoRef = useRef(null);
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -22,6 +24,14 @@ const LandingPage = () => {
 
   const isLoggedIn = Boolean(user);
   const getStartedHref = isLoggedIn ? "/dashboard" : "/auth?mode=signup";
+
+  const handleCloseTour = () => {
+    setShowTour(false);
+    if (tourVideoRef.current) {
+      tourVideoRef.current.pause();
+      tourVideoRef.current.currentTime = 0;
+    }
+  };
 
   return (
     <div className="font-['Inter'] text-slate-900 bg-white">
@@ -105,7 +115,11 @@ const LandingPage = () => {
                 arrow_forward
               </span>
             </Link>
-            <button className="w-full sm:w-auto px-10 py-5 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all text-lg flex items-center justify-center gap-2">
+            <button
+              className="w-full sm:w-auto px-10 py-5 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all text-lg flex items-center justify-center gap-2"
+              type="button"
+              onClick={() => setShowTour(true)}
+            >
               <span className="material-symbols-outlined text-2xl text-slate-400">
                 play_circle
               </span>
@@ -380,7 +394,19 @@ const LandingPage = () => {
           </div>
 
           <div className="pt-10 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 text-[13px] text-slate-400">
-            <p>{data.footer.copyright}</p>
+            <div className="flex flex-col md:flex-row items-center gap-3 text-center md:text-left">
+              <p>{data.footer.copyright}</p>
+              <span className="hidden md:inline text-slate-300">|</span>
+              <p>
+                Made by Vansh Gaikwad ·{" "}
+                <a
+                  className="hover:text-[#4F46E5] transition-colors"
+                  href="mailto:vanshgaikwad72@gmail.com"
+                >
+                  vanshgaikwad72@gmail.com
+                </a>
+              </p>
+            </div>
             <div className="flex items-center gap-8">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -390,6 +416,38 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {showTour ? (
+        <div
+          className="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={handleCloseTour}
+          role="presentation"
+        >
+          <div
+            className="w-full max-w-sm sm:max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+            onClick={(event) => event.stopPropagation()}
+            role="presentation"
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+              <p className="text-sm font-semibold text-slate-700">Product Tour</p>
+              <button
+                className="w-8 h-8 rounded-full border border-slate-200 text-slate-500 hover:text-slate-700"
+                type="button"
+                onClick={handleCloseTour}
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            <video
+              ref={tourVideoRef}
+              className="w-full h-auto"
+              src="/product_video.mp4"
+              controls
+              autoPlay
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
