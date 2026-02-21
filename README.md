@@ -4,7 +4,7 @@
 Niyam is a React + Tailwind + Firebase web application for tracking focus sessions and habits. Users can register and sign in, log daily activities, review history grouped by date, and view weekly analytics with a 3D bar chart built using Three.js.
 
 ## Live Preview
-Deployed URL: [https://kalvig-tech-intern-assessment.vercel.app/](https://niyam-d25w.vercel.app/)
+Deployed URL: [https://niyam-d25w.vercel.app/](https://niyam-d25w.vercel.app/)
 
 ## Design Reference
 Figma: https://www.figma.com/design/4i4ARHVVtp5uarjmAjJRN0/Kalvig-Technology?node-id=0-1&t=mm39i8sbKwhtVNKI-1
@@ -168,4 +168,5 @@ Niyam/
 - Implement activity tags and advanced filters.
 - Add export options for analytics reports.
 - Improve accessibility for charts and interactive controls.
+
 
