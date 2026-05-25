@@ -1,7 +1,7 @@
-﻿# Niyam – Focus & Habit Tracker
+﻿# Cognitive Behavior Intelligence Platform – Focus & Habit Tracker
 
 ## Project Overview
-Niyam is a React + Tailwind + Firebase web application for tracking focus sessions and habits. Users can register and sign in, log daily activities, review history grouped by date, and view weekly analytics with a 3D bar chart built using Three.js.
+Cognitive Behavior Intelligence Platform is a React + Tailwind + Firebase web application for tracking focus sessions and habits. Users can register and sign in, log daily activities, review history grouped by date, and view weekly analytics with a 3D bar chart built using Three.js.
 
 ## Live Preview
 Deployed URL: [https://niyam-d25w.vercel.app/](https://niyam-d25w.vercel.app/)
